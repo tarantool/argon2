@@ -1,7 +1,7 @@
-package = "argon2"
+package = "tarantool-argon2"
 version = "3.0.1-1"
 source = {
-    url = "git://github.com/thibaultcha/lua-argon2",
+    url = "git://github.com/asverdlov/lua-argon2",
     tag = "3.0.1"
 }
 description = {

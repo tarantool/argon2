@@ -228,7 +228,7 @@ largon2_cfg_variant(lua_State *L)
 /* ADAPTERS for coio_call() 1st parameter type. */
 
 static ssize_t
-argon2i_adapter(va_list ap) {
+argon2i_coio_adapter(va_list ap) {
     const uint32_t t_cost       = va_arg(ap, uint32_t);
     const uint32_t m_cost       = va_arg(ap, uint32_t);
     const uint32_t parallelism  = va_arg(ap, uint32_t);
@@ -245,7 +245,7 @@ argon2i_adapter(va_list ap) {
 }
 
 static ssize_t
-argon2id_adapter(va_list ap) {
+argon2id_coio_adapter(va_list ap) {
     const uint32_t t_cost       = va_arg(ap, uint32_t);
     const uint32_t m_cost       = va_arg(ap, uint32_t);
     const uint32_t parallelism  = va_arg(ap, uint32_t);
@@ -262,7 +262,7 @@ argon2id_adapter(va_list ap) {
 }
 
 static ssize_t
-argon2d_adapter(va_list ap) {
+argon2d_coio_adapter(va_list ap) {
     const uint32_t t_cost       = va_arg(ap, uint32_t);
     const uint32_t m_cost       = va_arg(ap, uint32_t);
     const uint32_t parallelism  = va_arg(ap, uint32_t);
@@ -276,6 +276,16 @@ argon2d_adapter(va_list ap) {
 
     return (ssize_t) argon2d_hash_encoded(t_cost, m_cost, parallelism,
             pwd, pwdlen, salt, saltlen, hashlen, encoded, encodedlen);
+}
+
+static ssize_t
+argon2_verify_coio_adapter(va_list ap) {
+    const char *encoded     = va_arg(ap, char*);
+    const void *pwd         = va_arg(ap, void*);
+    const size_t pwdlen     = va_arg(ap, size_t);
+    argon2_type type        = va_arg(ap, argon2_type);
+
+    return (ssize_t) argon2_verify(encoded, pwd, pwdlen, type);
 }
 
 /* BINDINGS */
@@ -381,42 +391,32 @@ largon2_hash_encoded(lua_State *L)
     encoded = luaL_buffinitsize(L, &buf, encoded_len);
 #endif
 
-    /* TODO: invoke coio_call() here */
     if (variant == Argon2_d) {
-        /*
         ret_code =
-          argon2d_hash_encoded(t_cost, m_cost, parallelism, plain, plainlen,
-                               salt, saltlen, hash_len, encoded, encoded_len);
-       */
-        coio_ret =
-          coio_call(argon2d_adapter, t_cost, m_cost, parallelism,
-                    plain, plainlen, salt, saltlen,
-                    hash_len, encoded, encoded_len);
-        ret_code = ARGON2_OK;
+          (argon2_error_codes) coio_call(
+              argon2d_coio_adapter,
+              t_cost, m_cost, parallelism,
+              plain, plainlen, salt, saltlen,
+              hash_len, encoded, encoded_len
+          );
 
     } else if (variant == Argon2_id) {
-        /*
         ret_code =
-          argon2id_hash_encoded(t_cost, m_cost, parallelism, plain, plainlen,
-                                salt, saltlen, hash_len, encoded, encoded_len);
-        */
-        coio_ret =
-          coio_call(argon2id_adapter, t_cost, m_cost, parallelism,
-                    plain, plainlen, salt, saltlen,
-                    hash_len, encoded, encoded_len);
-        ret_code = ARGON2_OK;
+          (argon2_error_codes) coio_call(
+              argon2id_coio_adapter,
+              t_cost, m_cost, parallelism,
+              plain, plainlen, salt, saltlen,
+              hash_len, encoded, encoded_len
+          );
 
     } else {
-        /*
         ret_code =
-          argon2i_hash_encoded(t_cost, m_cost, parallelism, plain, plainlen,
-                               salt, saltlen, hash_len, encoded, encoded_len);
-        */
-        coio_ret =
-          coio_call(argon2i_adapter, t_cost, m_cost, parallelism,
-                    plain, plainlen, salt, saltlen,
-                    hash_len, encoded, encoded_len);
-        ret_code = ARGON2_OK;
+          (argon2_error_codes) coio_call(
+              argon2i_coio_adapter,
+              t_cost, m_cost, parallelism,
+              plain, plainlen, salt, saltlen,
+              hash_len, encoded, encoded_len
+          );
     }
 
 #if LUA_51
@@ -490,7 +490,10 @@ largon2_verify(lua_State *L)
         variant = Argon2_i;
     }
 
-    ret_code = argon2_verify(encoded, plain, plainlen, variant);
+    ret_code = (argon2_error_codes) coio_call(
+        argon2_verify_coio_adapter,
+        encoded, plain, plainlen, variant
+    );
     if (ret_code == ARGON2_VERIFY_MISMATCH) {
         lua_pushboolean(L, 0);
         return 1;
