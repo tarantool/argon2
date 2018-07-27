@@ -36,6 +36,9 @@ original implementaiton.
 #endif
 #endif
 
+/* Tarantool declarations */
+size_t
+coio_call(ssize_t (*func)(va_list), ...);
 
 /***
 Argon2 hashing variants. Those fields are `userdatums`, read-only values that
@@ -222,6 +225,58 @@ largon2_cfg_variant(lua_State *L)
     return 1;
 }
 
+/* ADAPTERS for coio_call() 1st parameter type. */
+
+static ssize_t
+argon2i_adapter(va_list ap) {
+    const uint32_t t_cost       = va_arg(ap, uint32_t);
+    const uint32_t m_cost       = va_arg(ap, uint32_t);
+    const uint32_t parallelism  = va_arg(ap, uint32_t);
+    const void *pwd             = va_arg(ap, void*);
+    const size_t pwdlen         = va_arg(ap, size_t);
+    const void *salt            = va_arg(ap, void*);
+    const size_t saltlen        = va_arg(ap, size_t);
+    const size_t hashlen        = va_arg(ap, size_t);
+    char *encoded               = va_arg(ap, char*);
+    const size_t encodedlen     = va_arg(ap, size_t);
+
+    return (ssize_t) argon2i_hash_encoded(t_cost, m_cost, parallelism,
+            pwd, pwdlen, salt, saltlen, hashlen, encoded, encodedlen);
+}
+
+static ssize_t
+argon2id_adapter(va_list ap) {
+    const uint32_t t_cost       = va_arg(ap, uint32_t);
+    const uint32_t m_cost       = va_arg(ap, uint32_t);
+    const uint32_t parallelism  = va_arg(ap, uint32_t);
+    const void *pwd             = va_arg(ap, void*);
+    const size_t pwdlen         = va_arg(ap, size_t);
+    const void *salt            = va_arg(ap, void*);
+    const size_t saltlen        = va_arg(ap, size_t);
+    const size_t hashlen        = va_arg(ap, size_t);
+    char *encoded               = va_arg(ap, char*);
+    const size_t encodedlen     = va_arg(ap, size_t);
+
+    return (ssize_t) argon2id_hash_encoded(t_cost, m_cost, parallelism,
+            pwd, pwdlen, salt, saltlen, hashlen, encoded, encodedlen);
+}
+
+static ssize_t
+argon2d_adapter(va_list ap) {
+    const uint32_t t_cost       = va_arg(ap, uint32_t);
+    const uint32_t m_cost       = va_arg(ap, uint32_t);
+    const uint32_t parallelism  = va_arg(ap, uint32_t);
+    const void *pwd             = va_arg(ap, void*);
+    const size_t pwdlen         = va_arg(ap, size_t);
+    const void *salt            = va_arg(ap, void*);
+    const size_t saltlen        = va_arg(ap, size_t);
+    const size_t hashlen        = va_arg(ap, size_t);
+    char *encoded               = va_arg(ap, char*);
+    const size_t encodedlen     = va_arg(ap, size_t);
+
+    return (ssize_t) argon2d_hash_encoded(t_cost, m_cost, parallelism,
+            pwd, pwdlen, salt, saltlen, hashlen, encoded, encodedlen);
+}
 
 /* BINDINGS */
 
@@ -267,6 +322,7 @@ largon2_hash_encoded(lua_State *L)
     argon2_error_codes      ret_code;
     largon2_config_t       *cfg;
     luaL_Buffer             buf;
+    ssize_t                 coio_ret;
 
     plain = luaL_checklstring(L, 1, &plainlen);
     salt  = luaL_checklstring(L, 2, &saltlen);
@@ -325,20 +381,42 @@ largon2_hash_encoded(lua_State *L)
     encoded = luaL_buffinitsize(L, &buf, encoded_len);
 #endif
 
+    /* TODO: invoke coio_call() here */
     if (variant == Argon2_d) {
+        /*
         ret_code =
           argon2d_hash_encoded(t_cost, m_cost, parallelism, plain, plainlen,
                                salt, saltlen, hash_len, encoded, encoded_len);
+       */
+        coio_ret =
+          coio_call(argon2d_adapter, t_cost, m_cost, parallelism,
+                    plain, plainlen, salt, saltlen,
+                    hash_len, encoded, encoded_len);
+        ret_code = ARGON2_OK;
 
     } else if (variant == Argon2_id) {
+        /*
         ret_code =
           argon2id_hash_encoded(t_cost, m_cost, parallelism, plain, plainlen,
                                 salt, saltlen, hash_len, encoded, encoded_len);
+        */
+        coio_ret =
+          coio_call(argon2id_adapter, t_cost, m_cost, parallelism,
+                    plain, plainlen, salt, saltlen,
+                    hash_len, encoded, encoded_len);
+        ret_code = ARGON2_OK;
 
     } else {
+        /*
         ret_code =
           argon2i_hash_encoded(t_cost, m_cost, parallelism, plain, plainlen,
                                salt, saltlen, hash_len, encoded, encoded_len);
+        */
+        coio_ret =
+          coio_call(argon2i_adapter, t_cost, m_cost, parallelism,
+                    plain, plainlen, salt, saltlen,
+                    hash_len, encoded, encoded_len);
+        ret_code = ARGON2_OK;
     }
 
 #if LUA_51
