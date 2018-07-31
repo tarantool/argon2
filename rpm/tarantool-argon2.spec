@@ -1,5 +1,5 @@
 Name: tarantool-argon2
-Version: 1.0.0
+Version: 3.0.1
 Release: 1%{?dist}
 Summary: Password hash Argon2, winner of PHC
 Group: Applications/Databases
@@ -20,9 +20,6 @@ Password hash Argon2, winner of PHC
 %build
 %cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make %{?_smp_mflags}
-
-%check
-make %{?_smp_mflags} check
 
 %install
 %make_install
