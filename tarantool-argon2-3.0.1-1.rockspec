@@ -9,20 +9,15 @@ description = {
     homepage = "https://github.com/thibaultcha/lua-argon2",
     license = "MIT"
 }
-external_dependencies = {
-    ARGON2 = {
-        header = "argon2.h",
-        library = "argon2"
-    }
+dependencies = {
+    "lua >= 5.1"
 }
 build = {
-    type = "builtin",
-    modules = {
-        argon2 = {
-            sources = {"src/argon2.c"},
-            libraries = {"argon2"},
-            incdirs = {"$(ARGON2_INCDIR)"},
-            libdirs = {"$(ARGON2_LIBDIR)"}
-        }
-    }
+    type = "cmake",
+    variables = {
+        CMAKE_BUILD_TYPE="RelWithDebInfo";
+        CMAKE_INSTALL_PREFIX = "$(PREFIX)",
+        TARANTOOL_INSTALL_LIBDIR = "lib",
+        TARANTOOL_INSTALL_LUADIR = "lua",
+    };
 }
