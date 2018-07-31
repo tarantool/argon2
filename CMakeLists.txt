@@ -21,6 +21,7 @@ find_package(Tarantool REQUIRED)
 include_directories(${TARANTOOL_INCLUDE_DIRS})
 
 # Add C library
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/phc-winner-argon2/include)
 add_library(argon2 SHARED src/argon2.c)
 
 # Link with libargon2.a (core static library)

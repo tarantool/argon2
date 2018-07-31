@@ -8,6 +8,7 @@ URL: https://github.com/asverdlov/lua-argon2
 Source0: https://github.com/asverdlov/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildRequires: cmake >= 2.8
 BuildRequires: gcc >= 4.5
+BuildRequires: tarantool-devel >= 1.6.8.0
 Requires: tarantool >= 1.6.8.0
 
 %description
