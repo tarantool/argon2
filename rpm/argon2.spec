@@ -1,11 +1,11 @@
-Name: tarantool-argon2
+Name: argon2
 Version: 3.0.1
 Release: 1%{?dist}
 Summary: Password hash Argon2, winner of PHC
 Group: Applications/Databases
 License: BSD
-URL: https://github.com/asverdlov/lua-argon2
-Source0: https://github.com/asverdlov/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+URL: https://github.com/tarantool/argon2
+Source0: https://github.com/tarantool/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildRequires: cmake >= 2.8
 BuildRequires: gcc >= 4.5
 BuildRequires: tarantool-devel >= 1.6.8.0
