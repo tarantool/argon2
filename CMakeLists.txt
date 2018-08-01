@@ -5,10 +5,8 @@ project(argon2 C)
 # Compile libargon2.a (core static library)
 add_custom_target(
     static_argon2
-    COMMAND git submodule update --init --recursive
-    COMMAND cd phc-winner-argon2 && make
+    COMMAND CFLAGS=-fPIC make -C phc-winner-argon2
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    MAIN_DEPENDENCY argon2
     VERBATIM
 )
 
