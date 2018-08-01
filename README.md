@@ -1,6 +1,6 @@
 # argon2
 
-Tarantool C binding for the [Argon2] password hashing function.
+Tarantool C binding for the [Argon2](https://github.com/P-H-C/phc-winner-argon2) password hashing function.
 
 ### Table of Contents
 
