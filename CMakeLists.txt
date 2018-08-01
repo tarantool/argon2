@@ -3,11 +3,13 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(argon2 C)
 
 # Compile libargon2.a (core static library)
-add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/phc-winner-argon2/libargon2.a
+add_custom_target(
+    static_argon2
     COMMAND git submodule update --init --recursive
-    COMMAND make -C phc-winner-argon2
+    COMMAND cd phc-winner-argon2 && make
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    MAIN_DEPENDENCY argon2
+    VERBATIM
 )
 
 if (APPLE)
@@ -25,6 +27,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/phc-winner-argon2/include)
 add_library(argon2 SHARED src/argon2.c)
 
 # Link with libargon2.a (core static library)
+add_dependencies(argon2 static_argon2)
 target_link_libraries(argon2 ${CMAKE_CURRENT_SOURCE_DIR}/phc-winner-argon2/libargon2.a)
 
 set_target_properties(argon2 PROPERTIES PREFIX "")

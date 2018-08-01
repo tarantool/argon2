@@ -19,7 +19,6 @@ original implementaiton.
 @release 3.0.1
 */
 
-
 #include <string.h>
 #include <stdio.h>
 #include <argon2.h>
@@ -27,6 +26,8 @@ original implementaiton.
 #include <lua.h>
 #include <lualib.h>
 
+/* for coio_call() */
+#include <tarantool/module.h>
 
 #ifndef LUA_51
 #if !defined(LUA_VERSION_NUM) || LUA_VERSION_NUM < 502
@@ -35,10 +36,6 @@ original implementaiton.
 #define LUA_51 0
 #endif
 #endif
-
-/* Tarantool declarations */
-size_t
-coio_call(ssize_t (*func)(va_list), ...);
 
 /***
 Argon2 hashing variants. Those fields are `userdatums`, read-only values that

@@ -12,6 +12,11 @@ description = {
 dependencies = {
     "lua >= 5.1"
 }
+external_dependencies = {
+    TARANTOOL = {
+        header = "tarantool/module.h"
+    }
+}
 build = {
     type = "cmake",
     variables = {
