@@ -1,15 +1,6 @@
-# lua-argon2
+# argon2
 
-[![Module Version][badge-version-image]][luarocks-argon2]
-[![Build Status][badge-travis-image]][badge-travis-url]
-[![Coverage Status][badge-coveralls-image]][badge-coveralls-url]
-
-Lua C binding for the [Argon2] password hashing function. Compatible with
-Lua 5.x and LuaJIT.
-
-> For LuaJIT or [ngx_lua]/[OpenResty] usage, consider the FFI implementation
-> if this binding:
-> [lua-argon2-ffi](https://github.com/thibaultcha/lua-argon2-ffi).
+Tarantool C binding for the [Argon2] password hashing function.
 
 ### Table of Contents
 
@@ -21,49 +12,36 @@ Lua 5.x and LuaJIT.
 
 ### Requirements
 
-The [Argon2] shared library must be compiled and available in your system.
-
-Compatibility:
-- Version `1.x` of this module is compatible with Argon2
-  [`20151206`](https://github.com/P-H-C/phc-winner-argon2/releases/tag/20151206).
-- Version `2.x` of this module is compatible with Argon2
-  [`20160406`](https://github.com/P-H-C/phc-winner-argon2/releases/tag/20160406)
-  to [`20161029`](https://github.com/P-H-C/phc-winner-argon2/releases/tag/20161029).
-- Version `3.x` of this module is compatible with Argon2
-  [`20161029`](https://github.com/P-H-C/phc-winner-argon2/releases/tag/20161029)
-  and above.
-
-See the [CI builds][badge-coveralls-url] for the status of the currently
-supported versions.
+The module is self-contained.  
+No external dependencies are needed to be installed on system.
 
 [Back to TOC](#table-of-contents)
 
 ### Installation
 
-This binding can be installed via [Luarocks](https://luarocks.org):
+This binding can be installed via [Tarantool Rocks](https://tarantool.io/en/download/rocks):
 
+```bash
+$ tarantoolctl rocks install argon2
 ```
-$ luarocks install argon2 ARGON2_INCDIR="..." ARGON2_LIBDIR="..."
-```
 
-`ARGON2_INCDIR` must contain the `argon2.h` header file, and `ARGON2_LIBDIR`
-must contain the compiled shared library for your platform.
-
-Or by using the Makefile (use the provided variables to point it to your Lua
+Or by using the CMake (use the provided variables to point it to your Lua
 and Argon2 installations):
 
-```
+```bash
+$ cmake .
 $ make
 ```
 
-Using the Makefile will compile `argon2.so` which must be placed somewhere in
-your `LUA_CPATH`.
+The CMake will fetch original argon2 C library from submodule,
+build a static version of it (libargon2.a), then compile `argon2.so` Tarantool
+binding module and link the original library statically into it.
 
 [Back to TOC](#table-of-contents)
 
 ### Documentation
 
-This binding's documentation is available at
+Original Lua binding author' documentation is available at
 <http://thibaultcha.github.io/lua-argon2/>.
 
 The Argon2 password hashing function documentation is available at
@@ -139,17 +117,3 @@ end
 Work licensed under the MIT License. Please check
 [P-H-C/phc-winner-argon2][Argon2] for the license over Argon2 and the reference
 implementation.
-
-[Back to TOC](#table-of-contents)
-
-[Argon2]: https://github.com/P-H-C/phc-winner-argon2
-[luarocks-argon2]: http://luarocks.org/modules/thibaultcha/argon2
-
-[ngx_lua]: https://github.com/openresty/lua-nginx-module
-[OpenResty]: https://openresty.org
-
-[badge-travis-url]: https://travis-ci.org/thibaultcha/lua-argon2
-[badge-travis-image]: https://travis-ci.org/thibaultcha/lua-argon2.svg?branch=master
-[badge-version-image]: https://img.shields.io/badge/version-3.0.1-blue.svg?style=flat
-[badge-coveralls-url]: https://coveralls.io/github/thibaultcha/lua-argon2?branch=master
-[badge-coveralls-image]: https://coveralls.io/repos/github/thibaultcha/lua-argon2/badge.svg?branch=master
