@@ -329,7 +329,6 @@ largon2_hash_encoded(lua_State *L)
     argon2_error_codes      ret_code;
     largon2_config_t       *cfg;
     luaL_Buffer             buf;
-    ssize_t                 coio_ret;
 
     plain = luaL_checklstring(L, 1, &plainlen);
     salt  = luaL_checklstring(L, 2, &saltlen);
