@@ -1,4 +1,4 @@
-Name: argon2
+Name: tarantool-argon2
 Version: 3.0.1
 Release: 1%{?dist}
 Summary: Password hash Argon2, winner of PHC
