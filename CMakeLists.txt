@@ -5,7 +5,7 @@ project(argon2 C)
 # Compile libargon2.a (core static library)
 add_custom_target(
     static_argon2
-    COMMAND CFLAGS=-fPIC make -C phc-winner-argon2
+    COMMAND NO_THREADS=1 CFLAGS=-fPIC make -C phc-winner-argon2
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     VERBATIM
 )
