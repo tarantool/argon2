@@ -18,6 +18,16 @@ Password hash Argon2, winner of PHC
 %setup -q -n %{name}-%{version}
 
 %build
+
+# Extracted from official argon2 source package spec on centos:
+# https://centos.pkgs.org/7/epel-x86_64/libargon2-20161029-2.el7.x86_64.rpm.html
+#
+# Honours default RPM build options and library path, do not use -march=native
+sed -e 's:-O3 -Wall:%{optflags}:' \
+        -e 's:-march=\$(OPTTARGET) :${CFLAGS} :' \
+        -e 's:CFLAGS += -march=\$(OPTTARGET)::' \
+        -i phc-winner-argon2/Makefile
+
 %cmake . -DCMAKE_BUILD_TYPE=RelWithDebInfo
 make %{?_smp_mflags}
 
